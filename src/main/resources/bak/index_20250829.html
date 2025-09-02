@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarGuard - 权限管理系统</title>
+    <!-- 引入Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- 引入Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入自定义样式 -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
+        }
+        .sidebar h2 {
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+        .sidebar-menu a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar-menu a.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .content {
+            padding: 30px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0;
+        }
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .badge {
+            font-weight: 500;
+        }
+        .badge-success {
+            background-color: #28a745;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+        }
+        .badge-info {
+            background-color: #17a2b8;
+        }
+        .alert {
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .spinner-border {
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        .modal-content {
+            border-radius: 10px;
+        }
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        .modal-title {
+            font-weight: 600;
+        }
+        .tab-content {
+            margin-top: 20px;
+        }
+        .nav-tabs .nav-item .nav-link {
+            color: #6c757d;
+            font-weight: 500;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s ease;
+        }
+        .nav-tabs .nav-item .nav-link:hover {
+            color: #007bff;
+        }
+        .nav-tabs .nav-item .nav-link.active {
+            color: #007bff;
+            border-color: #dee2e6 #dee2e6 #fff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-2 sidebar">
+            <h2><i class="fas fa-shield-alt mr-2"></i>StarGuard</h2>
+            <ul class="sidebar-menu">
+                <li><a href="#user-list" class="active"><i class="fas fa-users mr-2"></i>用户列表</a></li>
+                <li><a href="#grant-permission"><i class="fas fa-plus-circle mr-2"></i>授予权限</a></li>
+                <li><a href="#revoke-permission"><i class="fas fa-minus-circle mr-2"></i>撤销权限</a></li>
+                <li><a href="#system-info"><i class="fas fa-info-circle mr-2"></i>系统信息</a></li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="col-md-10 content">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-shield-alt mr-2"></i>StarGuard - 权限管理系统</h3>
+                </div>
+                <div class="card-body">
+                    <!-- 标签页导航 -->
+                    <ul class="nav nav-tabs" id="main-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="user-list-tab" data-toggle="tab" href="#user-list">用户列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="grant-permission-tab" data-toggle="tab" href="#grant-permission">授予权限</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="revoke-permission-tab" data-toggle="tab" href="#revoke-permission">撤销权限</a>
+                        </li>
+                    </ul>
+
+                    <!-- 标签页内容 -->
+                    <div class="tab-content" id="main-tabs-content">
+                        <!-- 用户列表标签页 -->
+                        <div class="tab-pane fade show active" id="user-list">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h4><i class="fas fa-users mr-2"></i>用户列表</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-container">
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>用户名</th>
+                                                <th>主机地址</th>
+                                                <th>权限数量</th>
+                                                <th>是否有Grant Option</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="user-list-body">
+                                            <!-- 用户列表将通过JavaScript动态加载 -->
+                                            <tr>
+                                                <td colspan="5" class="text-center">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="sr-only">加载中...</span>
+                                                    </div>
+                                                    正在加载用户列表...
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 授予权限标签页 -->
+                        <div class="tab-pane fade" id="grant-permission">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h4><i class="fas fa-plus-circle mr-2"></i>授予权限</h4>
+                                </div>
+                                <div class="card-body">
+                                    <form id="grant-permission-form">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="grant-username">用户名</label>
+                                                <input type="text" class="form-control" id="grant-username" placeholder="请输入用户名" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="grant-host">主机地址</label>
+                                                <input type="text" class="form-control" id="grant-host" placeholder="例如：%" value="%" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>权限类型</label>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="grant-alter">
+                                                        <label class="form-check-label" for="grant-alter">ALTER</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="grant-drop">
+                                                        <label class="form-check-label" for="grant-drop">DROP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="grant-create-table">
+                                                        <label class="form-check-label" for="grant-create-table">CREATE TABLE</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="grant-create-view">
+                                                        <label class="form-check-label" for="grant-create-view">CREATE VIEW</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="grant-create-function">
+                                                        <label class="form-check-label" for="grant-create-function">CREATE FUNCTION</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="grant-create-mv">
+                                                        <label class="form-check-label" for="grant-create-mv">CREATE MATERIALIZED VIEW</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="grant-all">
+                                                        <label class="form-check-label" for="grant-all">ALL PRIVILEGES</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="grant-database">数据库名称</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="grant-database" placeholder="请输入数据库名称" required>
+                                                <div class="input-group-append">
+                                                    <div class="input-group-text">
+                                                        <input type="checkbox" id="grant-all-databases" aria-label="是否所有数据库">
+                                                    </div>
+                                                </div>
+                                                <label class="form-check-label ml-2" for="grant-all-databases">所有数据库</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="grant-with-grant-option">
+                                                <label class="form-check-label" for="grant-with-grant-option">WITH GRANT OPTION</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary" id="grant-submit-btn">
+                                            <i class="fas fa-check mr-2"></i>授予权限
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 撤销权限标签页 -->
+                        <div class="tab-pane fade" id="revoke-permission">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h4><i class="fas fa-minus-circle mr-2"></i>撤销权限</h4>
+                                </div>
+                                <div class="card-body">
+                                    <form id="revoke-permission-form">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <label for="revoke-username">用户名</label>
+                                                <input type="text" class="form-control" id="revoke-username" placeholder="请输入用户名" required>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="revoke-host">主机地址</label>
+                                                <input type="text" class="form-control" id="revoke-host" placeholder="例如：%" value="%" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>权限类型</label>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="revoke-alter">
+                                                        <label class="form-check-label" for="revoke-alter">ALTER</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="revoke-drop">
+                                                        <label class="form-check-label" for="revoke-drop">DROP</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="revoke-create-table">
+                                                        <label class="form-check-label" for="revoke-create-table">CREATE TABLE</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="revoke-create-view">
+                                                        <label class="form-check-label" for="revoke-create-view">CREATE VIEW</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="revoke-create-function">
+                                                        <label class="form-check-label" for="revoke-create-function">CREATE FUNCTION</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="revoke-create-mv">
+                                                        <label class="form-check-label" for="revoke-create-mv">CREATE MATERIALIZED VIEW</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="revoke-all">
+                                                        <label class="form-check-label" for="revoke-all">ALL PRIVILEGES</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="revoke-database">数据库名称</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="revoke-database" placeholder="请输入数据库名称" required>
+                                                <div class="input-group-append">
+                                                    <div class="input-group-text">
+                                                        <input type="checkbox" id="revoke-all-databases" aria-label="是否所有数据库">
+                                                    </div>
+                                                </div>
+                                                <label class="form-check-label ml-2" for="revoke-all-databases">所有数据库</label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger" id="revoke-submit-btn">
+                                            <i class="fas fa-times mr-2"></i>撤销权限
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 用户权限详情模态框 -->
+<div class="modal fade" id="user-permissions-modal" tabindex="-1" role="dialog" aria-labelledby="user-permissions-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="user-permissions-modal-label">用户权限详情</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="user-permissions-content">
+                    <!-- 用户权限详情将通过JavaScript动态加载 -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">加载中...</span>
+                        </div>
+                        正在加载权限详情...
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 操作结果提示框 -->
+<div id="message-alert" class="alert alert-success" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px;">
+    <button type="button" class="close" onclick="hideMessage()">&times;</button>
+    <strong id="message-title">成功!</strong> <span id="message-content">操作成功完成。</span>
+</div>
+
+<!-- 引入jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<!-- 引入Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 自定义JavaScript -->
+<script>
+        // API基础URL
+        const API_BASE_URL = '/star-guard/api/permission';
+
+        // 页面加载完成后执行
+        $(document).ready(function() {
+            // 加载用户列表
+            loadUserList();
+
+            // 授予权限表单提交事件
+            $('#grant-permission-form').submit(function(event) {
+                event.preventDefault();
+                grantPermission();
+            });
+
+            // 撤销权限表单提交事件
+            $('#revoke-permission-form').submit(function(event) {
+                event.preventDefault();
+                revokePermission();
+            });
+
+            // 标签页切换事件
+            $('#main-tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                const tabId = e.target.getAttribute('href');
+                // 高亮侧边栏对应的链接
+                $('.sidebar-menu a').removeClass('active');
+                $(`.sidebar-menu a[href="${tabId}"]`).addClass('active');
+            });
+
+            // 侧边栏链接点击事件
+            $('.sidebar-menu a').click(function(event) {
+                event.preventDefault();
+                const tabId = $(this).attr('href');
+                // 激活对应的标签页
+                $(`#main-tabs a[href="${tabId}"]`).tab('show');
+                // 高亮侧边栏链接
+                $('.sidebar-menu a').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+
+        // 加载用户列表
+        function loadUserList() {
+            $.ajax({
+                url: `${API_BASE_URL}/users`,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.code === 200) {
+                        const users = response.data;
+                        renderUserList(users);
+                    } else {
+                        showMessage('错误', response.message, 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('加载用户列表失败:', error);
+                    showMessage('错误', '加载用户列表失败: ' + xhr.responseText, 'danger');
+                    $('#user-list-body').html('<tr><td colspan="5" class="text-center text-danger">加载用户列表失败，请刷新页面重试</td></tr>');
+                }
+            });
+        }
+
+        // 渲染用户列表
+        function renderUserList(users) {
+            const tbody = $('#user-list-body');
+            tbody.empty();
+
+            if (users && users.length > 0) {
+                users.forEach(function(user) {
+                    const hasGrantOption = user.hasGrantOption ?
+                        '<span class="badge badge-success">是</span>' :
+                        '<span class="badge badge-secondary">否</span>';
+                    const permissionCount = user.permissions ? user.permissions.length : 0;
+                    const permissionCountBadge = permissionCount > 0 ?
+                        `<span class="badge badge-info">${permissionCount}</span>` :
+                        '<span class="badge badge-warning">0</span>';
+
+                    const row = `<tr>
+                        <td>${user.username}</td>
+                        <td>${user.host}</td>
+                        <td>${permissionCountBadge}</td>
+                        <td>${hasGrantOption}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="showUserPermissions('${user.username}', '${user.host}')">
+                                <i class="fas fa-eye mr-1"></i>查看权限
+                            </button>
+                        </td>
+                    </tr>`;
+                    tbody.append(row);
+                });
+            } else {
+                tbody.append('<tr><td colspan="5" class="text-center">暂无用户数据</td></tr>');
+            }
+        }
+
+        // 显示用户权限详情
+        function showUserPermissions(username, host) {
+            $.ajax({
+                url: `${API_BASE_URL}/users/${username}/${host}`,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.code === 200) {
+                        const user = response.data;
+                        renderUserPermissions(user);
+                        $('#user-permissions-modal').modal('show');
+                    } else {
+                        showMessage('错误', response.message, 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('加载用户权限详情失败:', error);
+                    showMessage('错误', '加载用户权限详情失败: ' + xhr.responseText, 'danger');
+                }
+            });
+        }
+
+        // 渲染用户权限详情
+        function renderUserPermissions(user) {
+            const content = $('#user-permissions-content');
+            content.empty();
+
+            const header = `<div class="mb-4">
+                <h5><strong>用户名:</strong> ${user.username}</h5>
+                <h5><strong>主机地址:</strong> ${user.host}</h5>
+                <h5><strong>是否有Grant Option:</strong> ${user.hasGrantOption ? '<span class="text-success">是</span>' : '<span class="text-secondary">否</span>'}</h5>
+            </div>`;
+            content.append(header);
+
+            if (user.permissions && user.permissions.length > 0) {
+                const permissionsTable = `<div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>权限类型</th>
+                                <th>数据库</th>
+                                <th>所有数据库</th>
+                                <th>With Grant Option</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                content.append(permissionsTable);
+
+                user.permissions.forEach(function(permission) {
+                    const row = `<tr>
+                        <td>${permission.permissionType}</td>
+                        <td>${permission.databaseName}</td>
+                        <td>${permission.allDatabases ? '是' : '否'}</td>
+                        <td>${permission.withGrantOption ? '是' : '否'}</td>
+                    </tr>`;
+                    content.append(row);
+                });
+
+                content.append(`</tbody>
+                    </table>
+                </div>`);
+            } else {
+                content.append('<div class="alert alert-info">该用户暂无权限</div>');
+            }
+        }
+
+        // 授予权限
+        function grantPermission() {
+            // 获取表单数据
+            const username = $('#grant-username').val();
+            const host = $('#grant-host').val();
+            const permissionTypes = [];
+            const databaseName = $('#grant-database').val();
+            const allDatabases = $('#grant-all-databases').is(':checked');
+            const withGrantOption = $('#grant-with-grant-option').is(':checked');
+
+            // 收集选中的权限类型
+            if ($('#grant-alter').is(':checked')) permissionTypes.push('ALTER');
+            if ($('#grant-drop').is(':checked')) permissionTypes.push('DROP');
+            if ($('#grant-create-table').is(':checked')) permissionTypes.push('CREATE TABLE');
+            if ($('#grant-create-view').is(':checked')) permissionTypes.push('CREATE VIEW');
+            if ($('#grant-create-function').is(':checked')) permissionTypes.push('CREATE FUNCTION');
+            if ($('#grant-create-mv').is(':checked')) permissionTypes.push('CREATE MATERIALIZED VIEW');
+            if ($('#grant-all').is(':checked')) permissionTypes.push('ALL PRIVILEGES');
+
+            // 验证权限类型是否选择
+            if (permissionTypes.length === 0) {
+                showMessage('错误', '请至少选择一种权限类型', 'danger');
+                return;
+            }
+
+            // 构建请求数据
+            const requestData = {
+                username: username,
+                host: host,
+                permissionTypes: permissionTypes,
+                databaseName: databaseName,
+                allDatabases: allDatabases,
+                withGrantOption: withGrantOption
+            };
+
+            // 禁用提交按钮，防止重复提交
+            const submitBtn = $('#grant-submit-btn');
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i>处理中...');
+
+            // 发送请求
+            $.ajax({
+                url: `${API_BASE_URL}/grant`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function(response) {
+                    if (response.code === 200) {
+                        showMessage('成功', '权限授予成功', 'success');
+                        // 清空表单
+                        $('#grant-permission-form')[0].reset();
+                        // 重新加载用户列表
+                        loadUserList();
+                    } else {
+                        showMessage('错误', response.message, 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('授予权限失败:', error);
+                    showMessage('错误', '授予权限失败: ' + xhr.responseText, 'danger');
+                },
+                complete: function() {
+                    // 恢复提交按钮状态
+                    submitBtn.prop('disabled', false);
+                    submitBtn.html('<i class="fas fa-check mr-2"></i>授予权限');
+                }
+            });
+        }
+
+        // 撤销权限
+        function revokePermission() {
+            // 获取表单数据
+            const username = $('#revoke-username').val();
+            const host = $('#revoke-host').val();
+            const permissionTypes = [];
+            const databaseName = $('#revoke-database').val();
+            const allDatabases = $('#revoke-all-databases').is(':checked');
+
+            // 收集选中的权限类型
+            if ($('#revoke-alter').is(':checked')) permissionTypes.push('ALTER');
+            if ($('#revoke-drop').is(':checked')) permissionTypes.push('DROP');
+            if ($('#revoke-create-table').is(':checked')) permissionTypes.push('CREATE TABLE');
+            if ($('#revoke-create-view').is(':checked')) permissionTypes.push('CREATE VIEW');
+            if ($('#revoke-create-function').is(':checked')) permissionTypes.push('CREATE FUNCTION');
+            if ($('#revoke-create-mv').is(':checked')) permissionTypes.push('CREATE MATERIALIZED VIEW');
+            if ($('#revoke-all').is(':checked')) permissionTypes.push('ALL PRIVILEGES');
+
+            // 验证权限类型是否选择
+            if (permissionTypes.length === 0) {
+                showMessage('错误', '请至少选择一种权限类型', 'danger');
+                return;
+            }
+
+            // 构建请求数据
+            const requestData = {
+                username: username,
+                host: host,
+                permissionTypes: permissionTypes,
+                databaseName: databaseName,
+                allDatabases: allDatabases
+            };
+
+            // 禁用提交按钮，防止重复提交
+            const submitBtn = $('#revoke-submit-btn');
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i>处理中...');
+
+            // 发送请求
+            $.ajax({
+                url: `${API_BASE_URL}/revoke`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function(response) {
+                    if (response.code === 200) {
+                        showMessage('成功', '权限撤销成功', 'success');
+                        // 清空表单
+                        $('#revoke-permission-form')[0].reset();
+                        // 重新加载用户列表
+                        loadUserList();
+                    } else {
+                        showMessage('错误', response.message, 'danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('撤销权限失败:', error);
+                    showMessage('错误', '撤销权限失败: ' + xhr.responseText, 'danger');
+                },
+                complete: function() {
+                    // 恢复提交按钮状态
+                    submitBtn.prop('disabled', false);
+                    submitBtn.html('<i class="fas fa-times mr-2"></i>撤销权限');
+                }
+            });
+        }
+
+        // 显示操作结果消息
+        function showMessage(title, content, type = 'success') {
+            const alert = $('#message-alert');
+            $('#message-title').text(title);
+            $('#message-content').text(content);
+
+            // 设置消息类型样式
+            alert.removeClass('alert-success alert-danger alert-warning alert-info');
+            alert.addClass(`alert-${type}`);
+
+            // 显示消息
+            alert.fadeIn();
+
+            // 3秒后自动隐藏
+            setTimeout(function() {
+                alert.fadeOut();
+            }, 3000);
+        }
+
+        // 隐藏消息
+        function hideMessage() {
+            $('#message-alert').fadeOut();
+        }
+    </script>
+</body>
+</html>
