@@ -91,6 +91,9 @@ The system frontend uses Bootstrap responsive design and includes:
 
 StarGuard2 follows RESTful API design principles, providing the following core API endpoints:
 
+### Standard API Endpoints
+
+
 ### User Management
 - **GET /api/permission/users** - Get all users
 - **GET /api/permission/users/{username}/{host}** - Get detailed permissions for a specific user
@@ -100,6 +103,20 @@ StarGuard2 follows RESTful API design principles, providing the following core A
 - **POST /api/permission/revoke** - Revoke permissions from a user
 - **POST /api/permission/batch-grant** - Batch grant permissions to multiple users
 - **POST /api/permission/batch-revoke** - Batch revoke permissions from multiple users
+
+### MCP Integration API Endpoints
+
+To integrate with MCP tools, StarGuard2 provides a dedicated set of API endpoints under the `/star-guard-mcp` path. These endpoints mirror the functionality of the standard API but are specifically formatted for MCP integration.
+
+#### User Management (MCP)
+- **GET /star-guard-mcp/users** - Get all users
+- **GET /star-guard-mcp/users/{username}/{host}** - Get detailed permissions for a specific user
+
+#### Permission Management (MCP)
+- **POST /star-guard-mcp/grant** - Grant permissions to a user
+- **POST /star-guard-mcp/revoke** - Revoke permissions from a user
+- **POST /star-guard-mcp/batch/grant** - Batch grant permissions to multiple users
+- **POST /star-guard-mcp/batch/revoke** - Batch revoke permissions from multiple users
 
 ## Deployment and Running
 
@@ -125,6 +142,10 @@ StarGuard2 follows RESTful API design principles, providing the following core A
 
 4. **Access the System**
    Open a browser and visit `http://localhost:8080/star-guard`
+
+5. **Register with MCP Tool**
+   To register StarGuard2 with Dify's "添加 MCP 服务 (HTTP)", use the following endpoint:
+   `http://192.168.166.17:8080/star-guard-mcp`
 
 ## System Highlights
 

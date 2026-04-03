@@ -1,7 +1,7 @@
 // 用户管理模块
 
 const UserManager = (function() {
-    const API_BASE_URL = '/star-guard/api/permission';
+    const API_BASE_URL = '/starGuard/api/permission';
 
     // 加载用户列表
     function loadUserList() {

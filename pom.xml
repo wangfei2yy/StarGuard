@@ -62,6 +62,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.18</version> <!-- 必须显式写！ -->
                 <configuration>
                     <mainClass>org.authority.StarGuard2.Application</mainClass>
                 </configuration>

@@ -12,6 +12,7 @@ D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\repo
 D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\service\impl\PermissionServiceImpl.java
 D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\config\WebMvcConfig.java
 D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\config\LoginInterceptor.java
+D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\controller\McpController.java
 D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\exception\GlobalExceptionHandler.java
 D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\model\Permission.java
 D:\IdeaProjects\authority\StarGuard2\src\main\java\org\authority\StarGuard2\dto\GrantPermissionRequestDTO.java

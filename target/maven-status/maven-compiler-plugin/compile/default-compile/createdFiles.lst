@@ -17,5 +17,6 @@ org\authority\StarGuard2\dto\RevokePermissionRequestDTO.class
 org\authority\StarGuard2\exception\PermissionException.class
 org\authority\StarGuard2\dto\GrantPermissionRequestDTO.class
 org\authority\StarGuard2\dto\UserPermissionDTO$PermissionDTO.class
+org\authority\StarGuard2\controller\McpController.class
 org\authority\StarGuard2\dto\UserPermissionDTO.class
 org\authority\StarGuard2\config\LoginInterceptor.class
